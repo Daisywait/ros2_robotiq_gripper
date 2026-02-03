@@ -109,7 +109,7 @@ hardware_interface::CallbackReturn RobotiqGripperHardwareInterface::on_init(cons
   gripper_closed_pos_ = stod(info_.hardware_parameters["gripper_closed_position"]);
   gripper_initial_pos_ = info_.hardware_parameters.count("gripper_initial_position") ?
                              stod(info_.hardware_parameters["gripper_initial_position"]) :
-                             gripper_closed_pos_ * 0.5;
+                             gripper_closed_pos_;
   reactivate_on_startup_ = info_.hardware_parameters.count("reactivate_on_startup") ?
                                parse_bool_param(info_.hardware_parameters["reactivate_on_startup"], true) :
                                true;

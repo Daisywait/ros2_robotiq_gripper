@@ -18,7 +18,7 @@
         gripper_max_speed:=0.150
         gripper_max_force:=235.0
         gripper_closed_position:=0.7929
-        gripper_initial_position:=0.39645
+        gripper_initial_position:=${gripper_closed_position}
         reactivate_on_startup:=true">
 
 
