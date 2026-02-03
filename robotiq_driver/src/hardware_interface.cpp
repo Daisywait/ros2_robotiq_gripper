@@ -26,6 +26,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <limits>
@@ -52,6 +53,29 @@ constexpr auto kGripperCommsLoopPeriod = std::chrono::milliseconds{ 10 };
 
 namespace robotiq_driver
 {
+namespace
+{
+bool parse_bool_param(const std::string& value, bool default_value)
+{
+  if (value.empty())
+  {
+    return default_value;
+  }
+  std::string lowered = value;
+  std::transform(lowered.begin(), lowered.end(), lowered.begin(),
+                 [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
+  if (lowered == "true" || lowered == "1" || lowered == "yes")
+  {
+    return true;
+  }
+  if (lowered == "false" || lowered == "0" || lowered == "no")
+  {
+    return false;
+  }
+  return default_value;
+}
+}  // namespace
+
 RobotiqGripperHardwareInterface::RobotiqGripperHardwareInterface()
 {
   driver_factory_ = std::make_unique<DefaultDriverFactory>();
@@ -87,7 +111,7 @@ hardware_interface::CallbackReturn RobotiqGripperHardwareInterface::on_init(cons
                              stod(info_.hardware_parameters["gripper_initial_position"]) :
                              gripper_closed_pos_ * 0.5;
   reactivate_on_startup_ = info_.hardware_parameters.count("reactivate_on_startup") ?
-                               (info_.hardware_parameters["reactivate_on_startup"] == "true") :
+                               parse_bool_param(info_.hardware_parameters["reactivate_on_startup"], true) :
                                true;
   gripper_max_speed_ = info_.hardware_parameters.count("gripper_max_speed") ?
                            stod(info_.hardware_parameters["gripper_max_speed"]) :
